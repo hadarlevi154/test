@@ -1,0 +1,21 @@
+on:
+  workflow_dispatch:
+    inputs:
+      client_repo:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone client repo at that exact commit
+        run: |
+          gh repo clone ${{ inputs.client_repo }} /tmp/client
+          cd /tmp/client && git checkout ${{ inputs.sha }}
+
+      - name: Run ingestion
+        run: python ingest.py --source /tmp/client --corpus ./corpus
